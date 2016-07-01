@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load mytags %}
+
+{% block content %}
+{% include 'nav_cat_bar.html' %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-10">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>填写基本信息</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal" id="groupForm" method="POST" action="">{% csrf_token %}
+                            {% if error %}
+                                <div class="alert alert-warning text-center">{{ error }}</div>
+                            {% endif %}
+                            {% if msg %}
+                                <div class="alert alert-success text-center">{{ msg }}</div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="group_name" class="col-sm-2 control-label">用户名<span class="red-fonts">*</span></label>
+                                <div class="col-sm-8">
+                                    <input id="username" name="username" placeholder="Username" type="text" class="form-control" {% if error %} value="{{ username }}" {% endif %}/>
+                                </div>
+                            </div>
+
+                            <div class="hr-line-dashed"></div>
+
+                              <div class="form-group">
+                                  <label for="group_name" class="col-sm-2 control-label">姓名<span class="red-fonts">*</span></label>
+                                  <div class="col-sm-8">
+                                    <input id="name" name="name" placeholder="Name" type="text" class="form-control" {% if error %} value="{{ name }}" {% endif %}/>
+                                  </div>
+                              </div>
+
+                            <div class="hr-line-dashed"></div>
+
+                             <div class="form-group">
+                                <label for="group_name" class="col-sm-2 control-label">用户组</label>
+                                <div class="col-sm-8">
+                                    <select id="groups" name="groups" class="form-control m-b" size="12" multiple>
+                                        {% for group in group_all %}
+                                            {% if forloop.first %}
+                                                <option value="{{ group.id }}" selected>{{ group.name }}</option>
+                                            {% else %}
+                                                <option value="{{ group.id }}">{{ group.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                              <div class="hr-line-dashed"></div>
+
+                              {% ifequal session_role_id 2 %}
+                              <div class="form-group">
+                                  <label for="group_name" class="col-sm-2 control-label">权限<span class="red-fonts">*</span></label>
+                                  <div class="col-sm-8">
+                                      {% for r,role_name in user_role.items %}
+                                        <div class="radio i-checks">
+                                            <label><input type="radio" value="{{ r }}" class="role" name="role" {% ifequal r 'CU' %}checked{% endifequal %}/>{{ role_name }}</label>
+                                        </div>
+                                      {% endfor %}
+                                  </div>
+                              </div>
+
+                               <div class="form-group" id="admin_groups" style="display: none">
+                                  <label for="group_name" class="col-sm-2 control-label">管理用户组<span class="red-fonts">*</span></label>
+                                  <div class="col-sm-8">
+                                      {% for user_group in group_all %}
+                                        <div class="radio i-checks">
+                                            <label><input type="radio" value="{{ user_group.id }}" name="admin_groups" />{{ user_group.name }}</label>
+                                        </div>
+                                      {% endfor %}
+                                  </div>
+                              </div>
+
+                              {% endifequal %}
+
+                              <div class="hr-line-dashed"></div>
+
+                              <div class="form-group">
+                                  <label for="group_name" class="col-sm-2 control-label">Email<span class="red-fonts">*</span></label>
+                                  <div class="col-sm-8">
+                                        <input id="email" name="email" placeholder="username@xx.com" type="text" class="form-control" {% if error %} value="{{ email }}" {% endif %}/>
+                                  </div>
+                              </div>
+
+                              <div class="hr-line-dashed"></div>
+
+                              <div class="form-group">
+                                  <label for="group_name" class="col-sm-2 control-label">其它</label>
+                                  <div class="col-sm-2">
+                                       <div class="checkbox i-checks">
+                                            <label><input type="checkbox" value="0" name="extra"/>禁用</label>
+                                        </div>
+                                  </div>
+                                  <div class="col-sm-2">
+                                       <div class="checkbox i-checks">
+                                            <label><input type="checkbox" value="1" name="extra" checked/>发送邮件</label>
+                                        </div>
+                                  </div>
+                              </div>
+
+                            <div class="hr-line-dashed"></div>
+
+                             <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-white" type="reset">取消</button>
+                                    <button id="submit_button" class="btn btn-primary" type="submit">确认保存</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
