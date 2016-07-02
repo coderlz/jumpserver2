@@ -8,6 +8,9 @@ from jperm.perm_api import (
 )
 from django import template
 from ..api import get_object
+from django.conf import settings
+import os
+
 
 register = template.Library()
 
@@ -70,3 +73,16 @@ def get_perm_asset_num(user_id):
         return len(user_perm_info['asset'].keys())
     else:
         return 0
+
+
+@register.filter(name='key_exists')
+def key_exists(username):
+    """
+    检查ssh key是否在指定目录
+    :param username:
+    :return:
+    """
+    if os.path.isfile(os.path.join(settings.KEY_DIR, 'user', username + '.perm')):
+        return True
+    else:
+        return False

@@ -140,7 +140,7 @@ def mkdir(dir_name, username='', mode=755):
     :param mode:
     :return:
     """
-    cmd = '[ -d %s ] && mkdir -p %s && chmod %s %s' %(dir_name, dir_name, mode, dir_name)
+    cmd = '[ ! -d %s ] && mkdir -p %s && chmod %s %s' %(dir_name, dir_name, mode, dir_name)
     bash(cmd)
     if username:
         chown(dir_name, username)
@@ -168,7 +168,7 @@ class PyCrypt(object):
         symbol = '!@$%^&*()_'
         salt_lsit = []
         if special:
-            for i in  range(length - 4):
+            for i in range(length - 4):
                 salt_lsit.append(random.choice(salt_key))
             for i in range(4):
                 salt_lsit.append(random.choice(symbol))
@@ -189,6 +189,7 @@ class PyCrypt(object):
         """
         return hashlib.md5().update(string).hexdigest()
 
+
 def bash(cmd):
     """
     执行bash命令
@@ -196,6 +197,20 @@ def bash(cmd):
     :return:
     """
     subprocess.call(cmd, shell=True)
+
+
+def is_role_request(request, role='user'):
+    """
+    检查角色
+    :param request:
+    :param role:
+    :return:
+    """
+    role_all = {'user': 'CU', 'admin': 'GA', 'super': 'SU'}
+    if request.user.role == role_all.get(role, 'CU'):
+        return True
+    else:
+        return False
 
 
 logger = set_log(settings.LOG_LEVEL)

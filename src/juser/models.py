@@ -46,7 +46,7 @@ class User(AbstractBaseUser):
     ssh_key_pwd = models.CharField(max_length=200)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    date_joined = models.DateTimeField()
+    date_joined = models.DateTimeField(auto_now=True)
     objects = UserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'password', ]

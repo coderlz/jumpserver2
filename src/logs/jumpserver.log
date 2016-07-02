@@ -1,0 +1,15 @@
+2016-07-02 21:34:31,089 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-02 21:43:29,607 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-02 21:45:52,527 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-02 21:48:23,654 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-02 21:49:43,519 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-02 21:50:43,296 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-02 22:01:07,699 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-02 22:01:48,391 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-02 23:04:10,029 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-02 23:48:21,850 - views.py - DEBUG - 删除用户 test2
+2016-07-02 23:48:22,220 - user_api.py - DEBUG - rm -f /projects/django/jumpserver2/src/keys/user/test2_*.perm
+2016-07-02 23:53:26,185 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-02 23:53:45,051 - views.py - DEBUG - 删除用户 test2
+2016-07-02 23:53:45,416 - user_api.py - DEBUG - rm -f /projects/django/jumpserver2/src/keys/user/test2_*.perm
+2016-07-02 23:54:04,858 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys

@@ -1,6 +1,7 @@
 # coding: utf-8
 from django.shortcuts import (
     render,
+    render_to_response,
     get_object_or_404
 )
 from django.http import (
@@ -17,6 +18,7 @@ from .models import User
 from jumpserver.api import (
     ServerError,
     PyCrypt,
+    is_role_request,
 )
 from .user_api import (
     db_add_group,
@@ -25,9 +27,13 @@ from .user_api import (
     server_add_user,
     db_del_user,
     server_del_user,
-    user_add_mail
+    user_add_mail,
+    get_display_msg,
+    gen_ssh_key,
+    logger,
 )
 from django.conf import settings
+import os
 # Create your views here.
 
 
@@ -144,6 +150,25 @@ def group_edit(request):
     return render(request, 'juser/group_edit.html', context=locals())
 
 
+def user_del(request):
+    if request.method == 'GET':
+        user_ids = request.GET.get('id', '')
+        user_id_list = user_ids.split(',')
+    elif request.method == 'POST':
+        user_ids = request.POST.get('id', '')
+        user_id_list = user_ids.split(',')
+    else:
+        return HttpResponse(u'错误请求')
+    print request.POST.get('id')
+    for user_id in user_id_list:
+        user = get_object(User, id=user_id)
+        if user and user.username != 'admin':
+            logger.debug(u'删除用户 %s' % user.username)
+            server_del_user(user.username)
+            user.delete()
+    return HttpResponse(u'删除成功',)
+
+
 def user_add(request):
     header_title, path1, path2 = u'添加用户', u'用户管理', u'添加用户'
     error = ""
@@ -200,8 +225,9 @@ def user_add(request):
             else:
                 if settings.MAIL_ENABLE and send_mail_need:
                         user_add_mail(user, kwargs=locals())
+                msg = get_display_msg(user, password=password, ssh_key_pwd=ssh_key_pwd, send_mail_need=send_mail_need)
 
-    return render(request, 'juser/group_add.html', context=locals())
+    return render(request, 'juser/user_add.html', context=locals())
 
 
 def user_list(request):
@@ -223,3 +249,40 @@ def user_list(request):
     users_list, p, users, page_range, current_page, show_first, show_end = pages(users_list, request)
 
     return render(request, 'juser/user_list.html', context=locals())
+
+
+def regen_ssh_key(request):
+    uuid_r = request.GET.get('uuid', '')
+    user = get_object(User, uuid=uuid_r)
+    if not user:
+        return HttpResponse(u'没有该用户')
+
+    username = user.username
+    ssh_key_pass = PyCrypt.gen_rand_pass(16)
+    gen_ssh_key(username, ssh_key_pass)
+    return HttpResponse(u'密匙已经生产, 密码: %s,请到下载页面下载') % ssh_key_pass
+
+
+def down_key(request):
+    if is_role_request(request, 'super'):
+        uuid_r = request.GET.get('uuid', '')
+    else:
+        uuid_r = request.user.uuid
+
+    if uuid_r:
+        user = get_object(User, uuid=uuid_r)
+        if user:
+            username = user.username
+            private_key_file = os.path.join(settings.KEY_DIR, 'user', username + '.perm')
+            if os.path.isfile(private_key_file):
+                f = open(private_key_file)
+                data = f.read()
+                f.close()
+                response = HttpResponse(data, content_type='applicaiton/octet-stream')
+                response['Content-Disposition'] = 'attachment;file=%s' %(os.path.basename(private_key_file))
+                if request.user.role == 'CU':
+                    os.unlink(private_key_file)
+                return response
+
+    return HttpResponse('No Key File,Contact Admin')
+

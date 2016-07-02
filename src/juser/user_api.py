@@ -51,6 +51,7 @@ def db_add_group(**kwargs):
         for user_id in users:
             group_add_user(group, user_id)
 
+
 def gen_ssh_key(username, password='',
                 key_dir=os.path.join(settings.KEY_DIR, 'user'),
                 authorized_keys=True, home="/home", length=2048):
@@ -66,10 +67,12 @@ def gen_ssh_key(username, password='',
     """
     logger.debug('生成ssh_key,并设置authorized_keys')
     private_key_file = os.path.join(key_dir, username+'.perm')
-    os.mkdir(key_dir, mode=777)
+    if not os.path.exists(key_dir):
+        os.mkdir(key_dir, 777)
     if os.path.isfile(private_key_file):
         os.unlink(private_key_file)
-    ret = bash('echo -e "y\n"|ssh-keygen -t rsa -f %s -b %s -P "%s"') % (private_key_file, length, password)
+    cmd = 'echo -e "y\n"|ssh-keygen -t rsa -f %s -b %s -P "%s"' % (private_key_file, length, password)
+    ret = bash(cmd)
 
     if authorized_keys:
         auth_key_dir = os.path.join(home, username, '.ssh')
@@ -78,7 +81,7 @@ def gen_ssh_key(username, password='',
         with open(private_key_file + '.pub') as pub_f:
             with open(authorized_key_file, 'w') as auth_f:
                 auth_f.write(pub_f.read())
-        os.chmod(authorized_key_file, mode=0600)
+        os.chmod(authorized_key_file, 0600)
         chown(authorized_key_file, username)
 
 
@@ -89,7 +92,9 @@ def server_add_user(username, ssh_key_pwd=''):
     :param ssh_key_pwd:
     :return:
     """
-    bash("adduser -s '%s' '%s'") % (os.path.join(settings.BASE_DIR, 'init.sh'), username)
+    cmd = "adduser -s '%s' '%s'" % (os.path.join(settings.BASE_DIR, 'init.sh'), username)
+    print cmd
+    bash(cmd)
     gen_ssh_key(username, ssh_key_pwd)
 
 
@@ -101,7 +106,8 @@ def server_del_user(username):
     """
     bash('userdel -r -f %s' % username)
     logger.debug('rm -f %s/%s_*.perm' % (os.path.join(settings.KEY_DIR, 'user'), username))
-    bash('rm -f %s/%s_*.perm' % (os.path.join(settings.KEY_DIR,'user'),username))
+    cmd = 'rm -f %s/%s.perm*' % (os.path.join(settings.KEY_DIR, 'user'), username)
+    bash(cmd)
 
 
 def db_add_user(**kwargs):
@@ -163,3 +169,16 @@ def user_add_mail(user, kwargs):
            kwargs.get('password'), kwargs.get('ssh_key_pwd'), settings.URL, user.uuid)
 
     send_mail(mail_title, msg, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+
+
+def get_display_msg(user, password='', ssh_key_pwd='', send_mail_need=False):
+    if send_mail_need:
+        msg = u"""
+        跳板机地址: %s<br>/
+        用户名: %s<br/>
+        密码: %s <br/>
+        密匙密码: %s <br/>
+        密匙下载url: %s/juser/key/down/uuid=%s <br/>
+        该账号和密码可以登录Web和跳板机。
+        """ % (settings.URL, user.username, password, ssh_key_pwd, settings.URL, user.uuid)
+        return msg

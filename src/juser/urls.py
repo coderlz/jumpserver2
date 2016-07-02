@@ -20,6 +20,10 @@ from .views import (
     group_edit,
     group_del,
     user_list,
+    user_add,
+    user_del,
+    down_key,
+    regen_ssh_key,
 )
 
 urlpatterns = [
@@ -29,6 +33,9 @@ urlpatterns = [
     url(r'group/edit/$', group_edit, name='user_group_edit'),
     url(r'group/del/$', group_del, name='user_group_del'),
     url(r'user/list/$', user_list, name='user_list'),
-
+    url(r'user/del/$', user_del, name='user_del'),
+    url(r'user/add/$', user_add, name='user_add'),
+    url(r'key/gen/$', regen_ssh_key, name='key_gen'),
+    url(r'key/down/$', down_key, name='key_down'),
 
 ]
