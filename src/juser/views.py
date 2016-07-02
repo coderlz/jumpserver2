@@ -251,6 +251,36 @@ def user_list(request):
     return render(request, 'juser/user_list.html', context=locals())
 
 
+def user_edit(request):
+    header_title, path1, path2 = u'编辑用户', u'用户管理', u'编辑用户组'
+
+    if request.method == 'GET':
+        user_id = request.GET.get('id', '')
+        if not user_id:
+            HttpResponseRedirect(reverse('index'))
+
+        user_role = {'SU': u'超级管理员', 'CU': u'普通用户'}
+        user = get_object(User, id=user_id)
+        group_all = UserGroup.objects.all()
+        if user:
+            groups_str = ' '.join([str(group.id) for group in user.group.all()])
+            admin_groups_str = ' '.join([str(admin_group.group.id) for admin_group in user.admingroup_set.all()])
+    else:
+        user_id = request.GET.get('id', '')
+        password = request.POST.get('password', '')
+        name = request.POST.get('name', '')
+        email = request.POST.get('email', '')
+        role_post = request.POST.get('role', '')
+        groups = request.POST.getlist('groups', '')
+        admin_groups = request.POST.getlist('admin_groups', [])
+        extra = request.POST.getlist('extra', [])
+        is_active = True if '0' in extra else False
+        email_need = True if '1' in extra else False
+        user_role = {'SU': u'超级管理员', 'GA': u'组管理员', 'CU': u'普通用户'}
+
+        if user_id:
+            pass
+
 def regen_ssh_key(request):
     uuid_r = request.GET.get('uuid', '')
     user = get_object(User, uuid=uuid_r)

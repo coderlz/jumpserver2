@@ -86,3 +86,13 @@ def key_exists(username):
         return True
     else:
         return False
+
+
+@register.filter(name='int2str')
+def int2str(value):
+    """
+    将int类型转换为str类型
+    :param value:
+    :return:
+    """
+    return str(value)
