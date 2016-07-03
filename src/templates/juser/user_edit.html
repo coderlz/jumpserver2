@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <div class="ibox-content">
-                        <form class="form-horizontal" id="groupForm" method="POST" action="{% url '' %}">{% csrf_token %}
+                        <form class="form-horizontal" id="groupForm" method="POST" action="{% url 'juser:user_edit' %}?id={{ user.id }}">{% csrf_token %}
                             {% if error %}
                                 <div class="alert alert-warning text-center">{{ error }}</div>
                             {% endif %}
@@ -95,7 +95,7 @@
                                         <div class="col-sm-3">
                                             <div class="radio i-checks">
                                                 <label>
-                                                    {% if user_group.id | int2str in admin_groups_str %}
+                                                    {% if user_group.id|int2str in admin_groups_str %}
                                                         <input type="radio" value="{{ user_group.id }}" name="admin_groups" checked/>
                                                     {% else %}
                                                          <input type="radio" value="{{ user_group.id }}" name="admin_groups" />

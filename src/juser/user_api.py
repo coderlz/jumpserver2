@@ -110,6 +110,41 @@ def server_del_user(username):
     bash(cmd)
 
 
+def db_update_user(**kwargs):
+    """
+    在数据库更新用户信息
+    :param kwargs:
+    :return:
+    """
+    group_post = kwargs.pop('groups')
+    admin_groups_post = kwargs.pop('admin_groups')
+    user_id = kwargs.pop('user_id')
+    user = User.objects.filter(id=user_id)
+    if user:
+        user_get = user.first()
+        password = kwargs.pop('password')
+        user.update(**kwargs)
+        if password.strip():
+            user_get.set_password(password)
+            user_get.save()
+    else:
+        return None
+
+    group_select = []
+    if group_post:
+        for group_id in group_post:
+            user_group = UserGroup.objects.filter(id=group_id)
+            group_select.extend(user_group)
+    user_get.group = group_select
+
+    if admin_groups_post != '':
+        user_get.admingroup_set.all().delete()
+        for group_id in admin_groups_post:
+            group = get_object(UserGroup, id=group_id)
+            AdminGroup(user=user, group=group).save()
+
+
+
 def db_add_user(**kwargs):
     """
     往数据库中添加用户

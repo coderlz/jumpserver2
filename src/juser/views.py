@@ -23,6 +23,7 @@ from jumpserver.api import (
 from .user_api import (
     db_add_group,
     db_add_user,
+    db_update_user,
     get_object,
     server_add_user,
     db_del_user,
@@ -33,6 +34,7 @@ from .user_api import (
     logger,
 )
 from django.conf import settings
+from django.core.mail import send_mail
 import os
 # Create your views here.
 
@@ -279,7 +281,31 @@ def user_edit(request):
         user_role = {'SU': u'超级管理员', 'GA': u'组管理员', 'CU': u'普通用户'}
 
         if user_id:
-            pass
+            user = get_object(User, id=user_id)
+        else:
+            return HttpResponseRedirect(reverse('juser:user_list'))
+        db_update_user(user_id=user_id,
+                       password=password,
+                       name=name,
+                       email=email,
+                       groups=groups,
+                       admin_groups=admin_groups,
+                       role=role_post,
+                       is_active=is_active)
+        if email_need:
+            msg = u"""
+            Hi %s:
+                您的登录信息已修改，请登录跳板机查看信息
+                地址: %s
+                用户名: %s
+                密码: %s(如果密码为None则代理原始密码)
+                权限: %s
+
+            """ % (user.name, settings.URL, user.username, password, user_role.get(role_post, u''))
+            send_mail(u'您的信息已修改', msg, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+        return HttpResponseRedirect(reverse('juser:user_list'))
+    return render(request, 'juser/user_edit.html', context=locals())
+
 
 def regen_ssh_key(request):
     uuid_r = request.GET.get('uuid', '')

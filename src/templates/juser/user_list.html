@@ -76,9 +76,9 @@
 
                                         </td>
                                         <td class="text-center">
-                                            <a href="#" class="btn btn-xs btn-info">编辑</a>
-                                            <a href="#" class="btn btn-xs btn-warning del">Email</a>
-                                            <a href="#" class="btn btn-xs btn-danger del">删除</a>
+                                            <a href="{% url 'juser:user_edit' %}?id={{ user.id }}" class="btn btn-xs btn-info">编辑</a>
+                                            <a href="{{ user.uuid }}" class="btn btn-xs btn-warning del">Email</a>
+                                            <a href="{% url 'juser:user_del' %}?id={{ user.id }}" class="btn btn-xs btn-danger del">删除</a>
                                         </td>
                                     </tr>
                                 {% endfor %}

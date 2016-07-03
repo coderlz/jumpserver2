@@ -13,3 +13,6 @@
 2016-07-02 23:53:45,051 - views.py - DEBUG - 删除用户 test2
 2016-07-02 23:53:45,416 - user_api.py - DEBUG - rm -f /projects/django/jumpserver2/src/keys/user/test2_*.perm
 2016-07-02 23:54:04,858 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
+2016-07-03 21:15:37,350 - views.py - DEBUG - 删除用户 test2
+2016-07-03 21:15:38,048 - user_api.py - DEBUG - rm -f /projects/django/jumpserver2/src/keys/user/test2_*.perm
+2016-07-03 21:16:51,552 - user_api.py - DEBUG - 生成ssh_key,并设置authorized_keys
